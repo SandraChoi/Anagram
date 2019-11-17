@@ -1,5 +1,6 @@
 #include <string>
 #include <cctype>
+#include <algorithm>
 
 #include "Dictionary.h"
 
@@ -67,40 +68,25 @@ void Dictionary::search(string letters, void callback(string))
 	remove_non_letters(letters);
 	if (letters.empty()) return;
 
-	size_t target_index = hash(letters);
+	size_t starting_index = hash(letters);
 
-	string jumbled = letters;	// init
-
-	Bucket_t * node = m_buckets[target_index];
+	Bucket_t * node = m_buckets[starting_index];
 
 	if (node != nullptr)
 	{
 		while (node != nullptr)
 		{
-			if (count(jumbled) == count(node->name))
+			if (count(letters) == count(node->name))
 			{
-				int found = 0;
+				string a = letters;
+				string b = node->name;
+				sort(a.begin(), a.end());
+				sort(b.begin(), b.end());
 
-				for (int k = 0; k < jumbled.length(); k++)
-				{
-					for (int i = 0; i < node->name.length(); i++)
-					{
-						if (jumbled[k] == node->name[i])
-						{
-							found++;
-							break;
-						}
-					}
-				}
-				if (found == node->name.length())
-				{
-					if (node->name != letters) {
-						callback(node->name);
-					}
-				}
-					
+				if ((a == b) && (node->name != letters)){
+					callback(node->name);
+				}	
 			}
-
 			node = node->p_next;
 		}
 	}
@@ -144,7 +130,7 @@ size_t Dictionary::count(string word) const
 {
 	size_t count = 0;
 
-	for (int i = 0; i < word.length(); i++)
+	for (unsigned int i = 0; i < word.length(); i++)
 	{
 		count += word[i];
 	}
