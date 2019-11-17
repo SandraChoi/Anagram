@@ -59,9 +59,58 @@ void Dictionary::add(string word)
 }
 
 
+
+void Dictionary::search(string letters, void callback(string)) 
+{
+	if (callback == nullptr) return;
+
+	remove_non_letters(letters);
+	if (letters.empty()) return;
+
+	size_t target_index = hash(letters);
+
+	string jumbled = letters;	// init
+
+	Bucket_t * node = m_buckets[target_index];
+
+	if (node != nullptr)
+	{
+		while (node != nullptr)
+		{
+			if (count(jumbled) == count(node->name))
+			{
+				int found = 0;
+
+				for (int k = 0; k < jumbled.length(); k++)
+				{
+					for (int i = 0; i < node->name.length(); i++)
+					{
+						if (jumbled[k] == node->name[i])
+						{
+							found++;
+							break;
+						}
+					}
+				}
+				if (found == node->name.length())
+				{
+					if (node->name != letters) {
+						callback(node->name);
+					}
+				}
+					
+			}
+
+			node = node->p_next;
+		}
+	}
+}
+
+
+/**/
+
 static const size_t Initial = 2166136261U;
 static const size_t Multiple = 16777619;
-
 
 size_t Dictionary::hash(string word) const
 {
@@ -75,8 +124,30 @@ size_t Dictionary::hash(string word) const
 	return (index * 107) % tableSize;
 }
 
-void Dictionary::search(string letters, void callback(string)) const
+/**/
+void Dictionary::remove_non_letters(string& letters)
 {
-
+	string::iterator dst = letters.begin();
+	for (string::const_iterator src = letters.begin(); src != letters.end(); src++)
+	{
+		if (isalpha(*src))
+		{
+			*dst = tolower(*src);
+			dst++;
+		}
+	}
+	letters.erase(dst, letters.end());
 }
 
+/**/
+size_t Dictionary::count(string word) const
+{
+	size_t count = 0;
+
+	for (int i = 0; i < word.length(); i++)
+	{
+		count += word[i];
+	}
+
+	return count;
+}

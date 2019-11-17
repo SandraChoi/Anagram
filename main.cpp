@@ -3,12 +3,17 @@
 #include <string>
 
 #include "Dictionary.h"
+#include "Report.h"
 
 using namespace std;
 
+
 int main()
 {
-	string inDicFileName = "words_test.txt";
+	Dictionary dictionary;
+
+	/* Fill a dictionary */
+	string inDicFileName = "words.txt";
 
 	ifstream inFile;
 
@@ -16,7 +21,6 @@ int main()
 
 	if (inFile.is_open()) 
 	{
-		Dictionary dictionary;
 		string line;
 
 		while (inFile) {
@@ -30,6 +34,20 @@ int main()
 		cout << "Cannot open file: " << inDicFileName << endl;
 	}
 
+	/* Find possible anagrams */
+
+	while (true)
+	{
+		cout << endl << "Enter a phrase with multiple words as input: ";
+
+		string phrase;
+		getline(cin, phrase);
+		if (!cin || phrase.empty())
+			return false;
+
+		Report report = Report(phrase);
+		dictionary.search(phrase, report.cb_find_anagram);
+	}
 	
-	return 0;
+	return true;
 }

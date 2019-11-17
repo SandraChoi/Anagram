@@ -13,9 +13,8 @@ public:
 	Dictionary();
 	~Dictionary();
 	void add(string word);
-	void search(string letters, void callback(string)) const;
-	size_t hash(string word) const;
-
+	void search(string letters, void callback(string));
+	
 private:
 	struct Bucket_t
 	{
@@ -24,6 +23,12 @@ private:
 	};
 
 	Bucket_t * m_buckets[tableSize];
+
+	size_t hash(string word) const;
+
+	void remove_non_letters(string &phrase);
+
+	size_t count(string word) const;
 
 };
 #endif
